@@ -12,8 +12,12 @@
 			'-Wnon-virtual-dtor',
 			'-std=c++11',
 			'-fno-exceptions',
-			'-fno-rtti',
+			'-frtti',
 		],
+		'cflags_cc!': [ '-fno-rtti' ],
+		'xcode_settings': {
+			'GCC_ENABLE_CPP_RTTI': 'YES',
+		},
 		'direct_dependent_settings': {
 			'include_dirs': [ 'spine-cpp/include' ],
 		},
