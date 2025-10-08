@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated January 1, 2020. Replaces all prior versions.
+ * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2020, Esoteric Software LLC
+ * Copyright (c) 2013-2025, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -26,10 +26,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
-
-#ifdef SPINE_UE4
-#include "SpinePluginPrivatePCH.h"
-#endif
 
 #include <spine/Atlas.h>
 #include <spine/ContainerUtil.h>
@@ -73,7 +69,7 @@ Atlas::Atlas(const char *data, int length, const char *dir, TextureLoader *textu
 Atlas::~Atlas() {
 	if (_textureLoader) {
 		for (size_t i = 0, n = _pages.size(); i < n; ++i) {
-			_textureLoader->unload(_pages[i]->getRendererObject());
+			_textureLoader->unload(_pages[i]->texture);
 		}
 	}
 	ContainerUtil::cleanUpVectorOfPointers(_pages);
@@ -112,21 +108,21 @@ struct SimpleString {
 		while (isspace((unsigned char) *start) && start < end)
 			start++;
 		if (start == end) {
-			length = end - start;
+			length = (int) (end - start);
 			return *this;
 		}
 		end--;
 		while (((unsigned char) *end == '\r') && end >= start)
 			end--;
 		end++;
-		length = end - start;
+		length = (int) (end - start);
 		return *this;
 	}
 
 	int indexOf(char needle) {
 		char *c = start;
 		while (c < end) {
-			if (*c == needle) return c - start;
+			if (*c == needle) return (int) (c - start);
 			c++;
 		}
 		return -1;
@@ -135,7 +131,7 @@ struct SimpleString {
 	int indexOf(char needle, int at) {
 		char *c = start + at;
 		while (c < end) {
-			if (*c == needle) return c - start;
+			if (*c == needle) return (int) (c - start);
 			c++;
 		}
 		return -1;
@@ -154,12 +150,12 @@ struct SimpleString {
 		SimpleString result;
 		result.start = start + s;
 		result.end = end;
-		result.length = result.end - result.start;
+		result.length = (int) (result.end - result.start);
 		return result;
 	}
 
 	bool equals(const char *str) {
-		int otherLen = strlen(str);
+		int otherLen = (int) strlen(str);
 		if (length != otherLen) return false;
 		for (int i = 0; i < length; i++) {
 			if (start[i] != str[i]) return false;
@@ -196,7 +192,7 @@ struct AtlasInput {
 		line.end = index;
 		if (index != end) index++;
 		line = line.trim();
-		line.length = end - start;
+		line.length = (int) (end - start);
 		return &line;
 	}
 
@@ -272,8 +268,8 @@ void Atlas::load(const char *begin, int length, const char *dir, bool createText
 				} else if (entry[0].equals("format")) {
 					page->format = (Format) indexOf(formatNames, 8, &entry[1]);
 				} else if (entry[0].equals("filter")) {
-					page->minFilter = (TextureFilter) indexOf(textureFilterNames, 8, &entry[1]);
-					page->magFilter = (TextureFilter) indexOf(textureFilterNames, 8, &entry[2]);
+					page->minFilter = (TEXTURE_FILTER_ENUM) indexOf(textureFilterNames, 8, &entry[1]);
+					page->magFilter = (TEXTURE_FILTER_ENUM) indexOf(textureFilterNames, 8, &entry[2]);
 				} else if (entry[0].equals("repeat")) {
 					page->uWrap = TextureWrap_ClampToEdge;
 					page->vWrap = TextureWrap_ClampToEdge;
@@ -284,16 +280,14 @@ void Atlas::load(const char *begin, int length, const char *dir, bool createText
 				}
 			}
 
-			if (createTexture) {
-				if (_textureLoader) _textureLoader->load(*page, String(path));
-				SpineExtension::free(path, __FILE__, __LINE__);
-			} else {
-				page->texturePath = String(path, true);
-			}
+			page->index = (int) _pages.size();
+			if (createTexture && _textureLoader) _textureLoader->load(*page, String(path));
+			page->texturePath = String(path, true);
 			_pages.add(page);
 		} else {
 			AtlasRegion *region = new (__FILE__, __LINE__) AtlasRegion();
 			region->page = page;
+			region->rendererObject = page->texture;
 			region->name = String(line->copy(), true);
 			while (true) {
 				line = reader.readLine();

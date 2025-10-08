@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated January 1, 2020. Replaces all prior versions.
+ * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2020, Esoteric Software LLC
+ * Copyright (c) 2013-2025, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -26,10 +26,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
-
-#ifdef SPINE_UE4
-#include "SpinePluginPrivatePCH.h"
-#endif
 
 #include <spine/ShearTimeline.h>
 
@@ -140,33 +136,7 @@ void ShearXTimeline::apply(Skeleton &skeleton, float lastTime, float time, Vecto
 	SP_UNUSED(direction);
 
 	Bone *bone = skeleton._bones[_boneIndex];
-	if (!bone->_active) return;
-
-	if (time < _frames[0]) {
-		switch (blend) {
-			case MixBlend_Setup:
-				bone->_shearX = bone->_data._shearX;
-				return;
-			case MixBlend_First:
-				bone->_shearX += (bone->_data._shearX - bone->_shearX) * alpha;
-			default: {
-			}
-		}
-		return;
-	}
-
-	float x = getCurveValue(time);
-	switch (blend) {
-		case MixBlend_Setup:
-			bone->_shearX = bone->_data._shearX + x * alpha;
-			break;
-		case MixBlend_First:
-		case MixBlend_Replace:
-			bone->_shearX += (bone->_data._shearX + x - bone->_shearX) * alpha;
-			break;
-		case MixBlend_Add:
-			bone->_shearX += x * alpha;
-	}
+	if (bone->_active) bone->_shearX = getRelativeValue(time, alpha, blend, bone->_shearX, bone->_data._shearX);
 }
 
 RTTI_IMPL(ShearYTimeline, CurveTimeline1)
@@ -188,31 +158,5 @@ void ShearYTimeline::apply(Skeleton &skeleton, float lastTime, float time, Vecto
 	SP_UNUSED(direction);
 
 	Bone *bone = skeleton._bones[_boneIndex];
-	if (!bone->_active) return;
-
-	if (time < _frames[0]) {
-		switch (blend) {
-			case MixBlend_Setup:
-				bone->_shearY = bone->_data._shearY;
-				return;
-			case MixBlend_First:
-				bone->_shearY += (bone->_data._shearY - bone->_shearY) * alpha;
-			default: {
-			}
-		}
-		return;
-	}
-
-	float y = getCurveValue(time);
-	switch (blend) {
-		case MixBlend_Setup:
-			bone->_shearY = bone->_data._shearY + y * alpha;
-			break;
-		case MixBlend_First:
-		case MixBlend_Replace:
-			bone->_shearY += (bone->_data._shearY + y - bone->_shearY) * alpha;
-			break;
-		case MixBlend_Add:
-			bone->_shearY += y * alpha;
-	}
+	if (bone->_active) bone->_shearY = getRelativeValue(time, alpha, blend, bone->_shearY, bone->_data._shearY);
 }

@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated January 1, 2020. Replaces all prior versions.
+ * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2020, Esoteric Software LLC
+ * Copyright (c) 2013-2025, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -27,10 +27,6 @@
  * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
-#ifdef SPINE_UE4
-#include "SpinePluginPrivatePCH.h"
-#endif
-
 #include <spine/PointAttachment.h>
 
 #include <spine/Bone.h>
@@ -49,12 +45,10 @@ void PointAttachment::computeWorldPosition(Bone &bone, float &ox, float &oy) {
 }
 
 float PointAttachment::computeWorldRotation(Bone &bone) {
-	float cos = MathUtil::cosDeg(_rotation);
-	float sin = MathUtil::sinDeg(_rotation);
-	float ix = cos * bone._a + sin * bone._b;
-	float iy = cos * bone._c + sin * bone._d;
-
-	return MathUtil::atan2(iy, ix) * MathUtil::Rad_Deg;
+	float r = _rotation * MathUtil::Deg_Rad, cosine = MathUtil::cos(r), sine = MathUtil::sin(r);
+	float x = cosine * bone._a + sine * bone._b;
+	float y = cosine * bone._c + sine * bone._d;
+	return MathUtil::atan2Deg(y, x);
 }
 
 float PointAttachment::getX() {

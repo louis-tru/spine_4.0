@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated January 1, 2020. Replaces all prior versions.
+ * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2020, Esoteric Software LLC
+ * Copyright (c) 2013-2025, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -30,7 +30,7 @@
 #ifndef Spine_SkeletonBinary_h
 #define Spine_SkeletonBinary_h
 
-#include <spine/TransformMode.h>
+#include <spine/Inherit.h>
 #include <spine/Vector.h>
 #include <spine/SpineObject.h>
 #include <spine/SpineString.h>
@@ -61,6 +61,8 @@ namespace spine {
 
 	class CurveTimeline2;
 
+	class Sequence;
+
 	class SP_API SkeletonBinary : public SpineObject {
 	public:
 		static const int BONE_ROTATE = 0;
@@ -73,6 +75,7 @@ namespace spine {
 		static const int BONE_SHEAR = 7;
 		static const int BONE_SHEARX = 8;
 		static const int BONE_SHEARY = 9;
+        static const int BONE_INHERIT = 10;
 
 		static const int SLOT_ATTACHMENT = 0;
 		static const int SLOT_RGBA = 1;
@@ -81,9 +84,21 @@ namespace spine {
 		static const int SLOT_RGB2 = 4;
 		static const int SLOT_ALPHA = 5;
 
+		static const int ATTACHMENT_DEFORM = 0;
+		static const int ATTACHMENT_SEQUENCE = 1;
+
 		static const int PATH_POSITION = 0;
 		static const int PATH_SPACING = 1;
 		static const int PATH_MIX = 2;
+
+        static const int PHYSICS_INERTIA = 0;
+        static const int PHYSICS_STRENGTH = 1;
+        static const int PHYSICS_DAMPING = 2;
+        static const int PHYSICS_MASS = 4;
+        static const int PHYSICS_WIND = 5;
+        static const int PHYSICS_GRAVITY = 6;
+        static const int PHYSICS_MIX = 7;
+        static const int PHYSICS_RESET = 8;
 
 		static const int CURVE_LINEAR = 0;
 		static const int CURVE_STEPPED = 1;
@@ -137,14 +152,16 @@ namespace spine {
 
 		Skin *readSkin(DataInput *input, bool defaultSkin, SkeletonData *skeletonData, bool nonessential);
 
+		Sequence *readSequence(DataInput *input);
+
 		Attachment *readAttachment(DataInput *input, Skin *skin, int slotIndex, const String &attachmentName,
 								   SkeletonData *skeletonData, bool nonessential);
 
-		void readVertices(DataInput *input, VertexAttachment *attachment, int vertexCount);
+		int readVertices(DataInput *input, Vector<float> &vertices, Vector<int> &bones, bool weighted);
 
 		void readFloatArray(DataInput *input, int n, float scale, Vector<float> &array);
 
-		void readShortArray(DataInput *input, Vector<unsigned short> &array);
+		void readShortArray(DataInput *input, Vector<unsigned short> &array, int n);
 
 		Animation *readAnimation(const String &name, DataInput *input, SkeletonData *skeletonData);
 
@@ -152,9 +169,9 @@ namespace spine {
 		setBezier(DataInput *input, CurveTimeline *timeline, int bezier, int frame, int value, float time1, float time2,
 				  float value1, float value2, float scale);
 
-		Timeline *readTimeline(DataInput *input, CurveTimeline1 *timeline, float scale);
+		void readTimeline(DataInput *input, Vector<Timeline*> &timelines, CurveTimeline1 *timeline, float scale);
 
-		Timeline *readTimeline2(DataInput *input, CurveTimeline2 *timeline, float scale);
+		void readTimeline2(DataInput *input, Vector<Timeline*> &timelines, CurveTimeline2 *timeline, float scale);
 	};
 }
 

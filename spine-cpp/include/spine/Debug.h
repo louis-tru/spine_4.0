@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated January 1, 2020. Replaces all prior versions.
+ * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2020, Esoteric Software LLC
+ * Copyright (c) 2013-2025, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -62,7 +62,7 @@ namespace spine {
 					   it->second.address);
 			}
 			printf("allocations: %zu, reallocations: %zu, frees: %zu\n", _allocations, _reallocations, _frees);
-			if (_allocated.empty()) printf("No leaks detected");
+			if (_allocated.empty()) printf("No leaks detected\n");
 		}
 
 		void clearAllocations() {
@@ -110,7 +110,15 @@ namespace spine {
 		}
 
 		virtual char *_readFile(const String &path, int *length) {
-			return _extension->_readFile(path, length);
+            auto data = _extension->_readFile(path, length);
+
+            if (_allocated.count(data) == 0) {
+                _allocated[data] = Allocation(data, sizeof(char) * (*length), nullptr, 0);
+                _allocations++;
+                _usedMemory += sizeof(char) * (*length);
+            }
+
+            return data;
 		}
 
 		size_t getUsedMemory() {

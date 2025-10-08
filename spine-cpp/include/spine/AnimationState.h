@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated January 1, 2020. Replaces all prior versions.
+ * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2020, Esoteric Software LLC
+ * Copyright (c) 2013-2025, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -45,7 +45,7 @@
 
 namespace spine {
 	enum EventType {
-		EventType_Start,
+		EventType_Start = 0,
 		EventType_Interrupt,
 		EventType_End,
 		EventType_Complete,
@@ -131,6 +131,10 @@ namespace spine {
 
 		void setReverse(bool inValue);
 
+		bool getShortestRotation();
+
+		void setShortestRotation(bool inValue);
+
 		/// Seconds to postpone playing the animation. When a track entry is the current track entry, delay postpones incrementing
 		/// the track time. When a track entry is queued, delay is the time from the start of the previous animation to when the
 		/// track entry will become the current track entry.
@@ -205,16 +209,22 @@ namespace spine {
 		/// When the mix percentage (mix time / mix duration) is less than the attachment threshold, attachment timelines for the
 		/// animation being mixed out will be applied. Defaults to 0, so attachment timelines are not applied for an animation being
 		/// mixed out.
-		float getAttachmentThreshold();
+		float getMixAttachmentThreshold();
 
-		void setAttachmentThreshold(float inValue);
+		void setMixAttachmentThreshold(float inValue);
+
+        /// When getAlpha() is greater than alphaAttachmentThreshold, attachment timelines are applied.
+	    /// Defaults to 0, so attachment timelines are always applied. */
+        float getAlphaAttachmentThreshold();
+
+        void setAlphaAttachmentThreshold(float inValue);
 
 		/// When the mix percentage (mix time / mix duration) is less than the draw order threshold, draw order timelines for the
 		/// animation being mixed out will be applied. Defaults to 0, so draw order timelines are not applied for an animation being
 		/// mixed out.
-		float getDrawOrderThreshold();
+		float getMixDrawOrderThreshold();
 
-		void setDrawOrderThreshold(float inValue);
+		void setMixDrawOrderThreshold(float inValue);
 
 		/// The animation queued to start after this animation, or NULL.
 		TrackEntry *getNext();
@@ -239,6 +249,8 @@ namespace spine {
 		float getMixDuration();
 
 		void setMixDuration(float inValue);
+
+        void setMixDuration(float mixDuration, float delay);
 
 		MixBlend getMixBlend();
 
@@ -267,6 +279,17 @@ namespace spine {
 
 		void setListener(AnimationStateListenerObject *listener);
 
+        /// Returns true if this track entry has been applied at least once.
+        ///
+        /// See AnimationState::apply(Skeleton).
+        bool wasApplied();
+
+        /// Returns true if there is a getNext() track entry that is ready to become the current track entry during the
+        /// next AnimationState::update(float)}
+        bool isNextReady () {
+            return _next != NULL && _nextTrackLast - _next->_delay >= 0;
+        }
+
 	private:
 		Animation *_animation;
 		TrackEntry *_previous;
@@ -275,8 +298,8 @@ namespace spine {
 		TrackEntry *_mixingTo;
 		int _trackIndex;
 
-		bool _loop, _holdPrevious, _reverse;
-		float _eventThreshold, _attachmentThreshold, _drawOrderThreshold;
+		bool _loop, _holdPrevious, _reverse, _shortestRotation;
+		float _eventThreshold, _mixAttachmentThreshold, _alphaAttachmentThreshold, _mixDrawOrderThreshold;
 		float _animationStart, _animationEnd, _animationLast, _nextAnimationLast;
 		float _delay, _trackTime, _trackLast, _nextTrackLast, _trackEnd, _timeScale;
 		float _alpha, _mixTime, _mixDuration, _interruptAlpha, _totalAlpha;
@@ -307,14 +330,13 @@ namespace spine {
 	private:
 		Vector<EventQueueEntry> _eventQueueEntries;
 		AnimationState &_state;
-		Pool<TrackEntry> &_trackEntryPool;
 		bool _drainDisabled;
 
-		static EventQueue *newEventQueue(AnimationState &state, Pool<TrackEntry> &trackEntryPool);
+		static EventQueue *newEventQueue(AnimationState &state);
 
 		static EventQueueEntry newEventQueueEntry(EventType eventType, TrackEntry *entry, Event *event = NULL);
 
-		EventQueue(AnimationState &state, Pool<TrackEntry> &trackEntryPool);
+		EventQueue(AnimationState &state);
 
 		~EventQueue();
 
@@ -425,6 +447,12 @@ namespace spine {
 
 		void enableQueue();
 
+		void setManualTrackEntryDisposal(bool inValue);
+
+        bool getManualTrackEntryDisposal();
+
+		void disposeTrackEntry(TrackEntry *entry);
+
 	private:
 		static const int Subsequent = 0;
 		static const int First = 1;
@@ -451,6 +479,8 @@ namespace spine {
 		int _unkeyedState;
 
 		float _timeScale;
+
+		bool _manualTrackEntryDisposal;
 
 		static Animation *getEmptyAnimation();
 

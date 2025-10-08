@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated January 1, 2020. Replaces all prior versions.
+ * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2020, Esoteric Software LLC
+ * Copyright (c) 2013-2025, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -27,10 +27,6 @@
  * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
-#ifdef SPINE_UE4
-#include "SpinePluginPrivatePCH.h"
-#endif
-
 #include <spine/PathConstraintMixTimeline.h>
 
 #include <spine/Event.h>
@@ -49,7 +45,7 @@ RTTI_IMPL(PathConstraintMixTimeline, CurveTimeline)
 
 PathConstraintMixTimeline::PathConstraintMixTimeline(size_t frameCount, size_t bezierCount, int pathConstraintIndex)
 	: CurveTimeline(frameCount, PathConstraintMixTimeline::ENTRIES, bezierCount),
-	  _pathConstraintIndex(pathConstraintIndex) {
+	  _constraintIndex(pathConstraintIndex) {
 	PropertyId ids[] = {((PropertyId) Property_PathConstraintMix << 32) | pathConstraintIndex};
 	setPropertyIds(ids, 1);
 }
@@ -60,7 +56,7 @@ void PathConstraintMixTimeline::apply(Skeleton &skeleton, float lastTime, float 
 	SP_UNUSED(pEvents);
 	SP_UNUSED(direction);
 
-	PathConstraint *constraintP = skeleton._pathConstraints[_pathConstraintIndex];
+	PathConstraint *constraintP = skeleton._pathConstraints[_constraintIndex];
 	PathConstraint &constraint = *constraintP;
 	if (!constraint.isActive()) return;
 

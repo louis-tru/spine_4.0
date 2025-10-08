@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated January 1, 2020. Replaces all prior versions.
+ * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2020, Esoteric Software LLC
+ * Copyright (c) 2013-2025, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -52,12 +52,12 @@ namespace spine {
 		apply(Skeleton &skeleton, float lastTime, float time, Vector<Event *> *pEvents, float alpha, MixBlend blend,
 			  MixDirection direction);
 
-		int getPathConstraintIndex() { return _pathConstraintIndex; }
+		int getPathConstraintIndex() { return _constraintIndex; }
 
-		void setPathConstraintIndex(int inValue) { _pathConstraintIndex = inValue; }
+		void setPathConstraintIndex(int inValue) { _constraintIndex = inValue; }
 
 	protected:
-		int _pathConstraintIndex;
+		int _constraintIndex;
 	};
 }
 

@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated January 1, 2020. Replaces all prior versions.
+ * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2020, Esoteric Software LLC
+ * Copyright (c) 2013-2025, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -36,18 +36,14 @@
 #include <string.h>
 #include <stdio.h>
 
-// Required for sprintf on MSVC
-#ifdef _MSC_VER
-#pragma warning(disable:4996)
-#endif
-
 namespace spine {
 	class SP_API String : public SpineObject {
 	public:
-		String() : _length(0), _buffer(NULL) {
+		String() : _length(0), _buffer(NULL), _tempowner(true) {
 		}
 
-		String(const char *chars, bool own = false) {
+		String(const char *chars, bool own = false, bool tofree = true) {
+			_tempowner = tofree;
 			if (!chars) {
 				_length = 0;
 				_buffer = NULL;
@@ -63,6 +59,7 @@ namespace spine {
 		}
 
 		String(const String &other) {
+			_tempowner = true;
 			if (!other._buffer) {
 				_length = 0;
 				_buffer = NULL;
@@ -87,7 +84,7 @@ namespace spine {
 
 		void own(const String &other) {
 			if (this == &other) return;
-			if (_buffer) {
+			if (_buffer && _tempowner) {
 				SpineExtension::free(_buffer, __FILE__, __LINE__);
 			}
 			_length = other._length;
@@ -98,7 +95,7 @@ namespace spine {
 
 		void own(const char *chars) {
 			if (_buffer == chars) return;
-			if (_buffer) {
+			if (_buffer && _tempowner) {
 				SpineExtension::free(_buffer, __FILE__, __LINE__);
 			}
 
@@ -118,7 +115,7 @@ namespace spine {
 
 		String &operator=(const String &other) {
 			if (this == &other) return *this;
-			if (_buffer) {
+			if (_buffer && _tempowner) {
 				SpineExtension::free(_buffer, __FILE__, __LINE__);
 			}
 			if (!other._buffer) {
@@ -134,7 +131,7 @@ namespace spine {
 
 		String &operator=(const char *chars) {
 			if (_buffer == chars) return *this;
-			if (_buffer) {
+			if (_buffer && _tempowner) {
 				SpineExtension::free(_buffer, __FILE__, __LINE__);
 			}
 			if (!chars) {
@@ -170,17 +167,53 @@ namespace spine {
 
 		String &append(int other) {
 			char str[100];
-			sprintf(str, "%i", other);
+			snprintf(str, 100, "%i", other);
 			append(str);
 			return *this;
 		}
 
 		String &append(float other) {
 			char str[100];
-			sprintf(str, "%f", other);
+			snprintf(str, 100, "%f", other);
 			append(str);
 			return *this;
 		}
+
+		bool startsWith(const String &needle) const {
+			if (needle.length() > length()) return false;
+			for (int i = 0; i < (int)needle.length(); i++) {
+				if (buffer()[i] != needle.buffer()[i]) return false;
+			}
+			return true;
+		}
+
+        int lastIndexOf(const char c) const {
+            for (int i = (int)length() - 1; i >= 0; i--) {
+                if (buffer()[i] == c) return i;
+            }
+            return -1;
+        }
+
+        String substring(int startIndex, int length) const {
+            if (startIndex < 0 || startIndex >= (int)_length || length < 0 || startIndex + length > (int)_length) {
+                return String();
+            }
+            char* subStr = SpineExtension::calloc<char>(length + 1, __FILE__, __LINE__);
+            memcpy(subStr, _buffer + startIndex, length);
+            subStr[length] = '\0';
+            return String(subStr, true, true);
+        }
+
+        String substring(int startIndex) const {
+            if (startIndex < 0 || startIndex >= (int)_length) {
+                return String();
+            }
+            int length = (int)_length - startIndex;
+            char* subStr = SpineExtension::calloc<char>(length + 1, __FILE__, __LINE__);
+            memcpy(subStr, _buffer + startIndex, length);
+            subStr[length] = '\0';
+            return String(subStr, true, true);
+        }
 
 		friend bool operator==(const String &a, const String &b) {
 			if (a._buffer == b._buffer) return true;
@@ -197,7 +230,7 @@ namespace spine {
 		}
 
 		~String() {
-			if (_buffer) {
+			if (_buffer && _tempowner) {
 				SpineExtension::free(_buffer, __FILE__, __LINE__);
 			}
 		}
@@ -205,6 +238,7 @@ namespace spine {
 	private:
 		mutable size_t _length;
 		mutable char *_buffer;
+		mutable bool _tempowner;
 	};
 }
 

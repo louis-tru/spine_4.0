@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated January 1, 2020. Replaces all prior versions.
+ * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2020, Esoteric Software LLC
+ * Copyright (c) 2013-2025, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -27,10 +27,6 @@
  * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
-#ifdef SPINE_UE4
-#include "SpinePluginPrivatePCH.h"
-#endif
-
 #include <spine/BoneData.h>
 
 #include <assert.h>
@@ -48,9 +44,11 @@ BoneData::BoneData(int index, const String &name, BoneData *parent) : _index(ind
 																	  _scaleY(1),
 																	  _shearX(0),
 																	  _shearY(0),
-																	  _transformMode(TransformMode_Normal),
+																	  _inherit(Inherit_Normal),
 																	  _skinRequired(false),
-																	  _color() {
+																	  _color(),
+																	  _icon(),
+																	  _visible(true) {
 	assert(index >= 0);
 	assert(_name.length() > 0);
 }
@@ -131,12 +129,12 @@ void BoneData::setShearY(float inValue) {
 	_shearY = inValue;
 }
 
-TransformMode BoneData::getTransformMode() {
-	return _transformMode;
+Inherit BoneData::getInherit() {
+	return _inherit;
 }
 
-void BoneData::setTransformMode(TransformMode inValue) {
-	_transformMode = inValue;
+void BoneData::setInherit(Inherit inValue) {
+	_inherit = inValue;
 }
 
 bool BoneData::isSkinRequired() {
@@ -149,4 +147,20 @@ void BoneData::setSkinRequired(bool inValue) {
 
 Color &BoneData::getColor() {
 	return _color;
+}
+
+const String &BoneData::getIcon() {
+	return _icon;
+}
+
+void BoneData::setIcon(const String &icon) {
+	this->_icon = icon;
+}
+
+bool BoneData::isVisible() {
+	return _visible;
+}
+
+void BoneData::setVisible(bool inValue) {
+	this->_visible = inValue;
 }

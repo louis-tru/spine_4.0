@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated January 1, 2020. Replaces all prior versions.
+ * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2020, Esoteric Software LLC
+ * Copyright (c) 2013-2025, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -27,10 +27,6 @@
  * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
-#ifdef SPINE_UE4
-#include "SpinePluginPrivatePCH.h"
-#endif
-
 #include <spine/IkConstraintTimeline.h>
 
 #include <spine/Event.h>
@@ -48,7 +44,7 @@ using namespace spine;
 RTTI_IMPL(IkConstraintTimeline, CurveTimeline)
 
 IkConstraintTimeline::IkConstraintTimeline(size_t frameCount, size_t bezierCount, int ikConstraintIndex)
-	: CurveTimeline(frameCount, IkConstraintTimeline::ENTRIES, bezierCount), _ikConstraintIndex(ikConstraintIndex) {
+	: CurveTimeline(frameCount, IkConstraintTimeline::ENTRIES, bezierCount), _constraintIndex(ikConstraintIndex) {
 	PropertyId ids[] = {((PropertyId) Property_IkConstraint << 32) | ikConstraintIndex};
 	setPropertyIds(ids, 1);
 }
@@ -58,7 +54,7 @@ void IkConstraintTimeline::apply(Skeleton &skeleton, float lastTime, float time,
 	SP_UNUSED(lastTime);
 	SP_UNUSED(pEvents);
 
-	IkConstraint *constraintP = skeleton._ikConstraints[_ikConstraintIndex];
+	IkConstraint *constraintP = skeleton._ikConstraints[_constraintIndex];
 	IkConstraint &constraint = *constraintP;
 	if (!constraint.isActive()) return;
 

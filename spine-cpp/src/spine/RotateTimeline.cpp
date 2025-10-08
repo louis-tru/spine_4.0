@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated January 1, 2020. Replaces all prior versions.
+ * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2020, Esoteric Software LLC
+ * Copyright (c) 2013-2025, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -26,10 +26,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
-
-#ifdef SPINE_UE4
-#include "SpinePluginPrivatePCH.h"
-#endif
 
 #include <spine/RotateTimeline.h>
 
@@ -59,30 +55,5 @@ void RotateTimeline::apply(Skeleton &skeleton, float lastTime, float time, Vecto
 	SP_UNUSED(direction);
 
 	Bone *bone = skeleton._bones[_boneIndex];
-	if (!bone->_active) return;
-
-	if (time < _frames[0]) {
-		switch (blend) {
-			case MixBlend_Setup:
-				bone->_rotation = bone->_data._rotation;
-				return;
-			case MixBlend_First:
-				bone->_rotation += (bone->_data._rotation - bone->_rotation) * alpha;
-			default: {
-			}
-		}
-		return;
-	}
-
-	float r = getCurveValue(time);
-	switch (blend) {
-		case MixBlend_Setup:
-			bone->_rotation = bone->_data._rotation + r * alpha;
-			break;
-		case MixBlend_First:
-		case MixBlend_Replace:
-			r += bone->_data._rotation - bone->_rotation;
-		case MixBlend_Add:
-			bone->_rotation += r * alpha;
-	}
+	if (bone->isActive()) bone->_rotation = getRelativeValue(time, alpha, blend, bone->_rotation, bone->getData()._rotation);
 }

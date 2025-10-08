@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated January 1, 2020. Replaces all prior versions.
+ * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2020, Esoteric Software LLC
+ * Copyright (c) 2013-2025, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -51,12 +51,12 @@ namespace spine {
 		/// Sets the time, mix and bend direction of the specified keyframe.
 		void setFrame(int frame, float time, float mix, float softness, int bendDirection, bool compress, bool stretch);
 
-		int getIkConstraintIndex() { return _ikConstraintIndex; }
+		int getIkConstraintIndex() { return _constraintIndex; }
 
-		void setIkConstraintIndex(int inValue) { _ikConstraintIndex = inValue; }
+		void setIkConstraintIndex(int inValue) { _constraintIndex = inValue; }
 
 	private:
-		int _ikConstraintIndex;
+		int _constraintIndex;
 
 		static const int ENTRIES = 6;
 		static const int MIX = 1;

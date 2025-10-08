@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated January 1, 2020. Replaces all prior versions.
+ * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2020, Esoteric Software LLC
+ * Copyright (c) 2013-2025, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -27,10 +27,6 @@
  * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
-#ifdef SPINE_UE4
-#include "SpinePluginPrivatePCH.h"
-#endif
-
 #include <spine/PathConstraintPositionTimeline.h>
 
 #include <spine/Event.h>
@@ -50,7 +46,7 @@ RTTI_IMPL(PathConstraintPositionTimeline, CurveTimeline1)
 PathConstraintPositionTimeline::PathConstraintPositionTimeline(size_t frameCount, size_t bezierCount,
 															   int pathConstraintIndex) : CurveTimeline1(frameCount,
 																										 bezierCount),
-																						  _pathConstraintIndex(
+																						  _constraintIndex(
 																								  pathConstraintIndex) {
 	PropertyId ids[] = {((PropertyId) Property_PathConstraintPosition << 32) | pathConstraintIndex};
 	setPropertyIds(ids, 1);
@@ -65,27 +61,6 @@ void PathConstraintPositionTimeline::apply(Skeleton &skeleton, float lastTime, f
 	SP_UNUSED(pEvents);
 	SP_UNUSED(direction);
 
-	PathConstraint *constraintP = skeleton._pathConstraints[_pathConstraintIndex];
-	PathConstraint &constraint = *constraintP;
-	if (!constraint.isActive()) return;
-
-	if (time < _frames[0]) {
-		switch (blend) {
-			case MixBlend_Setup:
-				constraint._position = constraint._data._position;
-				return;
-			case MixBlend_First:
-				constraint._position += (constraint._data._position - constraint._position) * alpha;
-				return;
-			default:
-				return;
-		}
-	}
-
-	float position = getCurveValue(time);
-
-	if (blend == MixBlend_Setup)
-		constraint._position = constraint._data._position + (position - constraint._data._position) * alpha;
-	else
-		constraint._position += (position - constraint._position) * alpha;
+	PathConstraint *constraint = skeleton._pathConstraints[_constraintIndex];
+	if (constraint->_active) constraint->_position = getAbsoluteValue(time, alpha, blend, constraint->_position, constraint->_data._position);
 }

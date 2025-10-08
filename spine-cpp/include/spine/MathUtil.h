@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated January 1, 2020. Replaces all prior versions.
+ * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2020, Esoteric Software LLC
+ * Copyright (c) 2013-2025, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -33,6 +33,9 @@
 #include <spine/SpineObject.h>
 
 #include <string.h>
+// Needed for older MSVC versions
+#undef min
+#undef max
 
 namespace spine {
 
@@ -43,6 +46,7 @@ namespace spine {
 	public:
 		static const float Pi;
 		static const float Pi_2;
+        static const float InvPi_2;
 		static const float Deg_Rad;
 		static const float Rad_Deg;
 
@@ -74,6 +78,8 @@ namespace spine {
 		/// degrees), largest error of 0.00488 radians (0.2796 degrees).
 		static float atan2(float y, float x);
 
+        static float atan2Deg(float x, float y);
+
 		static float acos(float v);
 
 		static float sqrt(float v);
@@ -82,6 +88,8 @@ namespace spine {
 
 		static bool isNan(float v);
 
+        static float quietNan();
+
 		static float random();
 
 		static float randomTriangular(float min, float max);
@@ -89,6 +97,8 @@ namespace spine {
 		static float randomTriangular(float min, float max, float mode);
 
 		static float pow(float a, float b);
+
+        static float ceil(float v);
 	};
 
 	struct SP_API Interpolation {

@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated January 1, 2020. Replaces all prior versions.
+ * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2020, Esoteric Software LLC
+ * Copyright (c) 2013-2025, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -26,10 +26,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
-
-#ifdef SPINE_UE4
-#include "SpinePluginPrivatePCH.h"
-#endif
 
 #include <spine/PathConstraint.h>
 
@@ -70,7 +66,7 @@ PathConstraint::PathConstraint(PathConstraintData &data, Skeleton &skeleton) : U
 	_segments.setSize(10, 0);
 }
 
-void PathConstraint::update() {
+void PathConstraint::update(Physics) {
 	Attachment *baseAttachment = _target->getAttachment();
 	if (baseAttachment == NULL || !baseAttachment->getRTTI().instanceOf(PathAttachment::rtti)) {
 		return;
@@ -95,12 +91,9 @@ void PathConstraint::update() {
 					Bone *boneP = _bones[i];
 					Bone &bone = *boneP;
 					float setupLength = bone._data.getLength();
-					if (setupLength < PathConstraint::EPSILON) {
-						_lengths[i] = 0;
-					} else {
-						float x = setupLength * bone._a, y = setupLength * bone._c;
-						_lengths[i] = MathUtil::sqrt(x * x + y * y);
-					}
+					float x = setupLength * bone._a;
+					float y = setupLength * bone._c;
+					_lengths[i] = MathUtil::sqrt(x * x + y * y);
 				}
 			}
 			for (size_t i = 1; i < spacesCount; ++i) {
@@ -152,7 +145,7 @@ void PathConstraint::update() {
 		}
 	}
 
-	Vector<float> &positions = computeWorldPositions(*attachment, spacesCount, tangents);
+	Vector<float> &positions = computeWorldPositions(*attachment, (int) spacesCount, tangents);
 	float boneX = positions[0];
 	float boneY = positions[1];
 	float offsetRotation = data.getOffsetRotation();
@@ -225,7 +218,7 @@ void PathConstraint::update() {
 }
 
 int PathConstraint::getOrder() {
-	return _data.getOrder();
+	return (int) _data.getOrder();
 }
 
 float PathConstraint::getPosition() {
@@ -292,7 +285,7 @@ PathConstraint::computeWorldPositions(PathAttachment &path, int spacesCount, boo
 	Vector<float> &out = _positions;
 	Vector<float> &world = _world;
 	bool closed = path.isClosed();
-	int verticesLength = path.getWorldVerticesLength();
+	int verticesLength = (int) path.getWorldVerticesLength();
 	int curveCount = verticesLength / 6;
 	int prevCurve = NONE;
 
@@ -583,4 +576,13 @@ bool PathConstraint::isActive() {
 
 void PathConstraint::setActive(bool inValue) {
 	_active = inValue;
+}
+
+void PathConstraint::setToSetupPose() {
+	PathConstraintData &data = this->_data;
+	this->_position = data._position;
+	this->_spacing = data._spacing;
+	this->_mixRotate = data._mixRotate;
+	this->_mixX = data._mixX;
+	this->_mixY = data._mixY;
 }

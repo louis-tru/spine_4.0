@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated January 1, 2020. Replaces all prior versions.
+ * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2020, Esoteric Software LLC
+ * Copyright (c) 2013-2025, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -26,10 +26,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
-
-#ifdef SPINE_UE4
-#include "SpinePluginPrivatePCH.h"
-#endif
 
 #include <spine/PathConstraintSpacingTimeline.h>
 
@@ -62,27 +58,7 @@ void PathConstraintSpacingTimeline::apply(Skeleton &skeleton, float lastTime, fl
 	SP_UNUSED(pEvents);
 	SP_UNUSED(direction);
 
-	PathConstraint *constraintP = skeleton._pathConstraints[_pathConstraintIndex];
-	PathConstraint &constraint = *constraintP;
-	if (!constraint.isActive()) return;
-
-	if (time < _frames[0]) {
-		switch (blend) {
-			case MixBlend_Setup:
-				constraint._spacing = constraint._data._spacing;
-				return;
-			case MixBlend_First:
-				constraint._spacing += (constraint._data._spacing - constraint._spacing) * alpha;
-				return;
-			default:
-				return;
-		}
-	}
-
-	float spacing = getCurveValue(time);
-
-	if (blend == MixBlend_Setup)
-		constraint._spacing = constraint._data._spacing + (spacing - constraint._data._spacing) * alpha;
-	else
-		constraint._spacing += (spacing - constraint._spacing) * alpha;
+	PathConstraint *constraint = skeleton._pathConstraints[_pathConstraintIndex];
+	if (constraint->_active)
+		constraint->_spacing = getAbsoluteValue(time, alpha, blend, constraint->_spacing, constraint->_data._spacing);
 }

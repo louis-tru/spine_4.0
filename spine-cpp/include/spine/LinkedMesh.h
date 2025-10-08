@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated January 1, 2020. Replaces all prior versions.
+ * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2020, Esoteric Software LLC
+ * Copyright (c) 2013-2025, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -42,15 +42,19 @@ namespace spine {
 		friend class SkeletonJson;
 
 	public:
-		LinkedMesh(MeshAttachment *mesh, const String &skin, size_t slotIndex, const String &parent,
-				   bool inheritDeform);
+		LinkedMesh(MeshAttachment *mesh, const int skinIndex, size_t slotIndex, const String &parent,
+				   bool inheritTimeline);
+
+        LinkedMesh(MeshAttachment *mesh, const String &skin, size_t slotIndex, const String &parent,
+                   bool inheritTimeline);
 
 	private:
 		MeshAttachment *_mesh;
-		String _skin;
+		int _skinIndex;
+        String _skin;
 		size_t _slotIndex;
 		String _parent;
-		bool _inheritDeform;
+		bool _inheritTimeline;
 	};
 }
 

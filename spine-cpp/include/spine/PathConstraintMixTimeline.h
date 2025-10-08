@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated January 1, 2020. Replaces all prior versions.
+ * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2020, Esoteric Software LLC
+ * Copyright (c) 2013-2025, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -33,7 +33,6 @@
 #include <spine/CurveTimeline.h>
 
 namespace spine {
-#define SP_PATHCONSTRAINTMIXTIMELINE_ENTRIES 5
 
 	class SP_API PathConstraintMixTimeline : public CurveTimeline {
 		friend class SkeletonBinary;
@@ -52,17 +51,17 @@ namespace spine {
 		/// Sets the time and mixes of the specified keyframe.
 		void setFrame(int frameIndex, float time, float mixRotate, float mixX, float mixY);
 
-		int getPathConstraintIndex() { return _pathConstraintIndex; }
+		int getPathConstraintIndex() { return _constraintIndex; }
 
-		void setPathConstraintIndex(int inValue) { _pathConstraintIndex = inValue; }
+		void setPathConstraintIndex(int inValue) { _constraintIndex = inValue; }
 
 	private:
-		int _pathConstraintIndex;
+		int _constraintIndex;
 
 		static const int ENTRIES = 4;
 		static const int ROTATE = 1;
 		static const int X = 2;
-		static const int Y = 2;
+		static const int Y = 3;
 	};
 }
 

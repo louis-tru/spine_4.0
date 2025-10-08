@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated January 1, 2020. Replaces all prior versions.
+ * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2020, Esoteric Software LLC
+ * Copyright (c) 2013-2025, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -32,6 +32,7 @@
 
 #include <spine/Vector.h>
 #include <spine/SpineString.h>
+#include <spine/Color.h>
 
 namespace spine {
 	class Attachment;
@@ -153,11 +154,14 @@ namespace spine {
 
 		Vector<ConstraintData *> &getConstraints();
 
+        Color &getColor() { return _color; }
+
 	private:
 		const String _name;
 		AttachmentMap _attachments;
 		Vector<BoneData *> _bones;
 		Vector<ConstraintData *> _constraints;
+        Color _color;
 
 		/// Attach all attachments from this skin if the corresponding attachment from the old skin is currently attached.
 		void attachAll(Skeleton &skeleton, Skin &oldSkin);

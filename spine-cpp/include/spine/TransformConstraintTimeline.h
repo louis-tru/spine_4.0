@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated January 1, 2020. Replaces all prior versions.
+ * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2020, Esoteric Software LLC
+ * Copyright (c) 2013-2025, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -51,12 +51,12 @@ namespace spine {
 		void setFrame(size_t frameIndex, float time, float mixRotate, float mixX, float mixY, float mixScaleX,
 					  float mixScaleY, float mixShearY);
 
-		int getTransformConstraintIndex() { return _transformConstraintIndex; }
+		int getTransformConstraintIndex() { return _constraintIndex; }
 
-		void setTransformConstraintIndex(int inValue) { _transformConstraintIndex = inValue; }
+		void setTransformConstraintIndex(int inValue) { _constraintIndex = inValue; }
 
 	private:
-		int _transformConstraintIndex;
+		int _constraintIndex;
 
 		static const int ENTRIES = 7;
 		static const int ROTATE = 1;

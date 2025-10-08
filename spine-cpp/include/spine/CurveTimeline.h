@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated January 1, 2020. Replaces all prior versions.
+ * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2020, Esoteric Software LLC
+ * Copyright (c) 2013-2025, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -75,6 +75,14 @@ namespace spine {
 		void setFrame(size_t frame, float time, float value);
 
 		float getCurveValue(float time);
+
+        float getRelativeValue(float time, float alpha, MixBlend blend, float current, float setup);
+
+        float getAbsoluteValue(float time, float alpha, MixBlend blend, float current, float setup);
+
+        float getAbsoluteValue (float time, float alpha, MixBlend blend, float current, float setup, float value);
+
+        float getScaleValue (float time, float alpha, MixBlend blend, MixDirection direction, float current, float setup);
 
 	protected:
 		static const int ENTRIES = 2;

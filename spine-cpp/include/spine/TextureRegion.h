@@ -1,8 +1,8 @@
 /******************************************************************************
  * Spine Runtimes License Agreement
- * Last updated January 1, 2020. Replaces all prior versions.
+ * Last updated April 5, 2025. Replaces all prior versions.
  *
- * Copyright (c) 2013-2020, Esoteric Software LLC
+ * Copyright (c) 2013-2025, Esoteric Software LLC
  *
  * Integration of the Spine Runtimes into software or otherwise creating
  * derivative works of the Spine Runtimes is permitted under the terms and
@@ -27,17 +27,24 @@
  * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
-#ifndef Spine_TransformMode_h
-#define Spine_TransformMode_h
+#ifndef Spine_TextureRegion_h
+#define Spine_TextureRegion_h
+
+#include <spine/Vector.h>
 
 namespace spine {
-	enum TransformMode {
-		TransformMode_Normal = 0,
-		TransformMode_OnlyTranslation,
-		TransformMode_NoRotationOrReflection,
-		TransformMode_NoScale,
-		TransformMode_NoScaleOrReflection
+	class SP_API TextureRegion : public SpineObject {
+	public:
+		void *rendererObject;
+		float u, v, u2, v2;
+		int degrees;
+		float offsetX, offsetY;
+		int width, height;
+		int originalWidth, originalHeight;
+
+		TextureRegion(): rendererObject(NULL), u(0), v(0), u2(0), v2(0), degrees(0), offsetX(0), offsetY(0), width(0), height(0), originalWidth(0), originalHeight(0) {};
+		~TextureRegion() {};
 	};
 }
 
-#endif /* Spine_TransformMode_h */
+#endif
